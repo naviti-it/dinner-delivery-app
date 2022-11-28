@@ -29,11 +29,7 @@ const plugins = [
     new MiniCssExtractPlugin({
         filename: filename('css')
     }),
-    new Dotenv({
-        path: './.env',
-        safe: true,
-        systemvars: true,
-    }),
+    new Dotenv({ systemvars: true }),
 ]
 
 const AddEslintPlugin = () => {
