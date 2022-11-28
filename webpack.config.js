@@ -32,6 +32,7 @@ const plugins = [
     new Dotenv({
         path: './.env',
         safe: true,
+        systemvars: true,
     }),
 ]
 
