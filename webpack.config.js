@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserWebpackPlugin = require('terser-webpack-plugin')
 const ESLintWebpackPlugin = require('eslint-webpack-plugin')
-const dotenv = require('dotenv')
+const Dotenv = require('dotenv-webpack')
 
 const isDev = process.env.NODE_ENV === 'development'
 const isProd = !isDev
@@ -29,8 +29,9 @@ const plugins = [
     new MiniCssExtractPlugin({
         filename: filename('css')
     }),
-    new dotenv.config({
-        path: path.resolve(__dirname, `${process.env.NODE_ENV}.env`)
+    new Dotenv({
+        path: './.env',
+        safe: true,
     }),
 ]
 
