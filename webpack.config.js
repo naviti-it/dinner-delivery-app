@@ -1,14 +1,23 @@
 const path = require('path')
-const HTMLWebpackPlugin = require('html-webpack-plugin') 
+const HTMLWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserWebpackPlugin = require('terser-webpack-plugin')
 const ESLintWebpackPlugin = require('eslint-webpack-plugin')
+const webpack = require('webpack')
+const dotenv = require('dotenv')
+
+
 
 const isDev = process.env.NODE_ENV === 'development'
 const isProd = !isDev
-const filename = ext =>isDev? `[name].${ext}`: `[name].[hash].${ext}`
+const filename = ext => isDev ? `[name].${ext}` : `[name].[hash].${ext}`
+const env = dotenv.config().parsed
+const envKeys = Object.keys(env).reduce((prev, next) => {
+    prev[`process.env.${next}`] = JSON.stringify(env[next])
+    return prev
+}, {})
 
 const plugins = [
     new HTMLWebpackPlugin({
@@ -20,22 +29,23 @@ const plugins = [
     new CopyWebpackPlugin({
         patterns: [
             {
-                from: path.resolve(__dirname, 'src/public','favicon.ico'),
+                from: path.resolve(__dirname, 'src/public', 'favicon.ico'),
                 to: path.resolve(__dirname, 'dist')
             }
         ]
     }),
     new MiniCssExtractPlugin({
-        filename: filename('css') 
-    })
+        filename: filename('css')
+    }),
+    new webpack.DefinePlugin(envKeys)
 ]
 
-const AddEslintPlugin = ()=>{
-    if(isDev){
+const AddEslintPlugin = () => {
+    if (isDev) {
         plugins.push(new ESLintWebpackPlugin())
     }
     return plugins
-    
+
 }
 
 
@@ -46,37 +56,37 @@ const optimization = () => {
         },
         runtimeChunk: 'single'
     }
-if(isProd){
-    config.minimizer = [
-        new OptimizeCssAssetsWebpackPlugin(),
-        new TerserWebpackPlugin()
-    ]
-}
+    if (isProd) {
+        config.minimizer = [
+            new OptimizeCssAssetsWebpackPlugin(),
+            new TerserWebpackPlugin()
+        ]
+    }
 
     return config
 }
 
 
-const cssLoaders = (extra) =>{
+const cssLoaders = (extra) => {
     const loaders = [
         MiniCssExtractPlugin.loader,
         'css-loader']
 
-        if(extra){
-            loaders.push(extra)
-        }
-    
+    if (extra) {
+        loaders.push(extra)
+    }
+
     return loaders
 }
 
-const babelOptions = (preset)=>{
+const babelOptions = (preset) => {
     const options = {
         presets: [
             '@babel/preset-env',
         ]
     }
 
-    if(preset){
+    if (preset) {
         options.presets.push(preset)
     }
 
@@ -111,7 +121,7 @@ module.exports = {
         open: true,
         hot: isDev
     },
-    devtool: isDev? 'source-map': 'eval',
+    devtool: isDev ? 'source-map' : 'eval',
     plugins: AddEslintPlugin(),
     module: {
         rules: [
@@ -123,17 +133,17 @@ module.exports = {
             {
                 test: /\.less$/i,
                 use: cssLoaders('less-loader')
-                    
+
 
             },
             {
                 test: /\.s[ac]ss$/i,
                 use: cssLoaders('sass-loader')
-                
+
 
             },
             {
-                test:/\.(png|svg|jpg|gif)$/,
+                test: /\.(png|svg|jpg|gif)$/,
                 type: 'asset/resource'
             },
             {
@@ -149,7 +159,7 @@ module.exports = {
                 exclude: /(node_modules|bower_components)/,
                 use: {
                     loader: 'babel-loader',
-                    options: babelOptions()  
+                    options: babelOptions()
                 }
             },
             {
