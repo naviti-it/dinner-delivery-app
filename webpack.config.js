@@ -113,7 +113,7 @@ module.exports = {
         open: true,
         hot: isDev
     },
-    devtool: isDev ? 'source-map' : 'eval',
+    devtool: isDev ? 'source-map' : false,
     plugins: AddEslintPlugin(),
     module: {
         rules: [
